@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  WelcomeView.swift
 //  bouncy
 //
 //  Created by Nico on 4/17/25.
@@ -7,33 +7,37 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    var body: some View {
-        Spacer()
-        VStack {
-            Text("Bouncy")
-                .padding()
-                .fixedSize()
-            Circle()
-                .fill(Color.black)
-                .frame(width: 25, height: 25)
-            Ellipse()
-                .fill(Color.black)
-                .frame(width: 25, height: 7)
-        }
-        .padding()
-        Spacer()
-        VStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.black)
-                .frame(width: 100, height: 5)
-            Text("tap to begin")
-        }
-        .padding()
-        Spacer()
-    }
-}
+struct WelcomeView: View {
+    @State private var startGame = false
 
-#Preview {
-    ContentView()
+    var body: some View {
+        if startGame {
+            GameView()
+        } else {
+            VStack {
+                Text("Bouncy")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .padding()
+
+                Circle()
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
+
+                Spacer().frame(height: 40)
+
+                Button(action: {
+                    startGame = true
+                }) {
+                    Text("Tap to begin")
+                        .padding()
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
+        }
+    }
 }

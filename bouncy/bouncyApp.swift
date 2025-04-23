@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct bouncyApp: App {
@@ -13,5 +14,6 @@ struct bouncyApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: HighScore.self)
     }
 }
