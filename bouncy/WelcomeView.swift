@@ -12,7 +12,8 @@ struct WelcomeView: View {
 
     var body: some View {
         if startGame {
-            GameView()
+            GameView(gameStarted: $startGame)
+                .transition(.opacity)
         } else {
             VStack {
                 Text("Bouncy")
@@ -38,6 +39,7 @@ struct WelcomeView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
+            .transition(.opacity)
         }
     }
 }

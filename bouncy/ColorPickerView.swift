@@ -9,38 +9,62 @@ import SwiftUI
 
 struct ColorPickerView: View {
     @Binding var selectedColor: Color
-    let colors: [Color] = [.white, .red, .orange, .yellow, .green, .blue, .purple, .pink, .brown]
+    @Environment(\.dismiss) var dismiss
+
+    // Preset color choices
+    let presetColors: [Color] = [.red, .green, .blue, .yellow, .orange, .purple, .white, .cyan]
 
     var body: some View {
-        VStack {
-            HStack {
-                Spacer()
-                Button(action: {}) {
-                    Image(systemName: "xmark")
-                        .foregroundColor(.white)
-                }
-            }
-            .padding()
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("Choose Ball Color")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.top)
 
-            Text("Selected color:")
-                .foregroundColor(.white)
-
-            Circle()
-                .fill(selectedColor)
-                .frame(width: 30, height: 30)
-
-            LazyVGrid(columns: Array(repeating: GridItem(), count: 3), spacing: 15) {
-                ForEach(colors, id: \.self) { color in
-                    Circle()
-                        .fill(color)
-                        .frame(width: 50, height: 50)
-                        .onTapGesture {
-                            selectedColor = color
+                // Preset colors
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(presetColors, id: \.self) { color in
+                            Circle()
+                                .fill(color)
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: selectedColor == color ? 3 : 0)
+                                )
+                                .onTapGesture {
+                                    selectedColor = color
+                                }
                         }
+                    }
+                    .padding()
                 }
+
+                // System color picker
+                ColorPicker("Or pick any color:", selection: $selectedColor, supportsOpacity: false)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.secondarySystemBackground).opacity(0.2))
+                    )
+                    .foregroundColor(.white)
+                    .padding(.horizontal)
+
+                Spacer()
             }
             .padding()
+            .background(Color.black.ignoresSafeArea()) // black background
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                }
+            }
         }
-        .background(Color.black.opacity(0.9))
+        .preferredColorScheme(.dark)
     }
 }

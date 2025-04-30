@@ -10,7 +10,8 @@ import SwiftData
 
 struct GameView: View {
     @Environment(\.modelContext) private var context
-    @Query private var scores: [HighScore]
+    @Query(sort: \HighScore.value, order: .reverse) private var scores: [HighScore]
+    @Binding var gameStarted: Bool
 
     @State private var currentScore = 0
     @State private var ballPosition = CGPoint(x: 200, y: 100)
@@ -43,9 +44,13 @@ struct GameView: View {
                         Button(action: {
                             showColorPicker.toggle()
                         }) {
-                            Image(systemName: "paintpalette")
-                                .foregroundColor(ballColor)
-                                .padding()
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(ballColor)
+                                .frame(width: 30, height: 24)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.white.opacity(0.8), lineWidth: 2)
+                                )
                         }
                     }
                     .foregroundColor(.white)
@@ -60,7 +65,7 @@ struct GameView: View {
                     .frame(width: 30, height: 30)
                     .position(ballPosition)
 
-                // Paddle (FIXED: not inside VStack)
+                // Paddle
                 Rectangle()
                     .frame(width: paddleWidth, height: paddleHeight)
                     .foregroundColor(.white)
@@ -70,10 +75,15 @@ struct GameView: View {
                             paddleX = value.location.x
                         }
                     )
-
-                // Color Picker
-                if showColorPicker {
-                    ColorPickerView(selectedColor: $ballColor)
+            }
+            .sheet(isPresented: $showColorPicker) {
+                ColorPickerView(selectedColor: $ballColor)
+            }
+            .onChange(of: showColorPicker) { oldValue, newValue in
+                if newValue {
+                    gameTimer?.invalidate()
+                } else {
+                    startGame()
                 }
             }
             .onAppear {
@@ -133,10 +143,10 @@ struct GameView: View {
             }
             try? context.save()
         }
-
-        currentScore = 0
-        ballPosition = CGPoint(x: viewWidth / 2, y: 100)
-        ballVelocity = CGSize(width: 2, height: 4)
+        
+        withAnimation {
+            gameStarted = false
+        }
     }
 }
 
